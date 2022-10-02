@@ -99,3 +99,46 @@ app.socket('hallaisen', (msg) => {
   console.log('Message received from NextJS', msg);
 });
 ```
+
+9. Check out the implementation in the `@codehooks/socket` root directory. We can use the `socket.io-client` to send messages to the codehooks app.
+
+A simple react component implementation below:
+
+```tsx
+useEffect(() => {
+  const socket = new SocketClient(process.env.NEXT_PUBLIC_API_PATH);
+
+  const connect = async () => {
+    await socket.connect();
+
+    socket.on('connect', () => {
+      console.log('connected');
+    });
+
+    socket.on('datetime', (dateTime: string) => {
+      console.log('datetime', dateTime);
+    });
+
+    socket.emit('hello', 'Hello from client...');
+    socket.emit('hallaisen', 'Hallaisen from client...');
+  };
+
+  connect();
+
+  return () => {
+    socket.disconnect();
+  };
+}, []);
+```
+
+10. Call the REST endpoint from a component:
+
+```jsx
+useEffect(() => {
+  fetch(`${process.env.NEXT_PUBLIC_API_PATH}/hello`)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+    });
+}, []);
+```

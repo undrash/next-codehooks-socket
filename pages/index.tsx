@@ -1,9 +1,50 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import type { NextPage } from 'next';
+import Head from 'next/head';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import styles from '../styles/Home.module.css';
+import { SocketClient } from '../@codehooks/socket';
 
 const Home: NextPage = () => {
+  const [apiMessage, setApiMessage] = useState('');
+  const [dateTime, setDateTime] = useState('');
+
+  // REST COMMUNICATION EXAMPLE
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_PATH}/hello`)
+      .then((res) => res.json())
+      .then((data) => {
+        setApiMessage(data.message);
+      });
+  }, []);
+
+  // SOCKET COMMUNICATION EXAMPLE
+  useEffect(() => {
+    const socket = new SocketClient(process.env.NEXT_PUBLIC_API_PATH);
+
+    const connect = async () => {
+      await socket.connect();
+
+      socket.on('connect', () => {
+        console.log('connected');
+      });
+
+      socket.on('datetime', (dateTime: string) => {
+        console.log('datetime', dateTime);
+        setDateTime(dateTime);
+      });
+
+      socket.emit('hello', 'Hello from client...');
+      socket.emit('hallaisen', 'Hallaisen from client...');
+    };
+
+    connect();
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -16,6 +57,14 @@ const Home: NextPage = () => {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+
+        {apiMessage && (
+          <h2 className={styles.subtitle}>
+            with <a href="https://codehooks.io">{apiMessage}!</a>
+          </h2>
+        )}
+
+        {dateTime && <code className={styles.code}>{dateTime}</code>}
 
         <p className={styles.description}>
           Get started by editing{' '}
@@ -66,7 +115,7 @@ const Home: NextPage = () => {
         </a>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
