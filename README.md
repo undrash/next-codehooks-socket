@@ -1,4 +1,4 @@
-## NextJS Codehooks Socket Example Dev Setup
+## NextJS + Codehooks + Socket - Example Dev Setup with Live Reload
 
 Please check out the commit history for the steps taken to get this example up and running.
 
@@ -62,29 +62,10 @@ Basically following this for a [local setup](https://codehooks.io/docs/localdev)
 NEXT_PUBLIC_API_PATH=http://localhost:4000/dev
 ```
 
-8. Check out the implementation in the `api` directory, but we can enable codehooks do the following:
+8. Check out the implementation in the `api` directory, but we can enable codehooks to do the following:
 
 ```js
 const socket = new SocketHooks(app);
-
-app.queue(Topics.MAIN, async (req, res) => {
-  const { dateTime } = req.body.payload;
-
-  if (!socket) return res.end();
-
-  socket.emit('datetime', dateTime);
-  res.end();
-});
-
-app.job(Cron.EVERY_SECOND, async (req, res) => {
-  const conn = await Datastore.open();
-
-  await conn.enqueue(Topics.MAIN, {
-    dateTime: getFormattedDateTime(),
-  });
-
-  res.end();
-});
 
 app.get('/hello', async (req, res) => {
   console.log('I run locally, cool!');
