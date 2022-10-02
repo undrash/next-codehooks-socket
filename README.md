@@ -1,8 +1,8 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 ## NextJS Codehooks Socket Example Dev Setup
 
 Please check out the commit history for the steps taken to get this example up and running.
+
+![Next Codehooks Socket Image](./next-codehooks-socket-img.png)
 
 Here's a brief summary:
 
