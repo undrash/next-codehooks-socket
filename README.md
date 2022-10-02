@@ -53,7 +53,6 @@ Basically following this for a [local setup](https://codehooks.io/docs/localdev)
 ```json
 "scripts": {
     "dev": "concurrently \"npm run dev --prefix ./api\" \"next dev\"",
-    ...
   },
 ```
 
@@ -61,4 +60,42 @@ Basically following this for a [local setup](https://codehooks.io/docs/localdev)
 
 ```
 NEXT_PUBLIC_API_PATH=http://localhost:4000/dev
+```
+
+8. Check out the implementation in the `api` directory, but we can enable codehooks do the following:
+
+```js
+const socket = new SocketHooks(app);
+
+app.queue(Topics.MAIN, async (req, res) => {
+  const { dateTime } = req.body.payload;
+
+  if (!socket) return res.end();
+
+  socket.emit('datetime', dateTime);
+  res.end();
+});
+
+app.job(Cron.EVERY_SECOND, async (req, res) => {
+  const conn = await Datastore.open();
+
+  await conn.enqueue(Topics.MAIN, {
+    dateTime: getFormattedDateTime(),
+  });
+
+  res.end();
+});
+
+app.get('/hello', async (req, res) => {
+  console.log('I run locally, cool!');
+  res.json({ message: 'Codehooks' });
+});
+
+app.socket('hello', (msg) => {
+  console.log('Message received from NextJS:', msg);
+});
+
+app.socket('hallaisen', (msg) => {
+  console.log('Message received from NextJS', msg);
+});
 ```
