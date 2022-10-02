@@ -1,34 +1,64 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+## NextJS Codehooks Socket Example Dev Setup
 
-First, run the development server:
+Please check out the commit history for the steps taken to get this example up and running.
 
-```bash
-npm run dev
-# or
-yarn dev
+Here's a brief summary:
+
+1. Create a NextJS app with `create-next-app`
+
+```
+npx create-next-app@latest --ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install `concurrently` in the NextJS app
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```
+npm i -D concurrently
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+3. Install `socket.io-client` in the NextJS app
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+```
+npm i socket.io-client
+```
 
-## Learn More
+Note: The socket packages would ideally come from a package called `@codehooks/socket` or something along those lines. This is just an example.
 
-To learn more about Next.js, take a look at the following resources:
+4. Create a codehooks app in a directory called `api` in the NextJS app
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+mkdir api
+cd api
+touch index.js
+npm init -y
+npm i codehooks codehooks-js
+npm i -D nodemon
+npm i socket.io
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Basically following this for a [local setup](https://codehooks.io/docs/localdev).
 
-## Deploy on Vercel
+5. Add this line as your `dev` script -- check how the `package.json` file should look like in the api directory.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```json
+"scripts": {
+    "dev": "nodemon -w . -x coho localserver --port 4000"
+  },
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+6. Add this line as your `dev` script -- check how the `package.json` file should look like in the root directory.
+
+```json
+"scripts": {
+    "dev": "concurrently \"npm run dev --prefix ./api\" \"next dev\"",
+    ...
+  },
+```
+
+7. Add an `.env.development.local` file in the root directory that contains the API path to the codehooks app.
+
+```
+NEXT_PUBLIC_API_PATH=http://localhost:4000/dev
+```
